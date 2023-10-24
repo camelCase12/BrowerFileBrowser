@@ -1,0 +1,45 @@
+﻿@page "/"
+@using BrowerFileBrowser.Containers;
+@using BrowerFileBrowser.Enums;
+@using BrowerFileBrowser.Utils;
+@using MudBlazor;
+
+@inject SettingsStateContainer SettingsStateContainer
+
+<MudThemeProvider IsDarkMode="true" />
+
+<MudStack name="page-container" Spacing="0" Style="width: 100%; height: 100%;" Class="gradient-background">
+    <PathBar PathChangedByUser="@UserPathChangeHandler"></PathBar>
+    <MudStack name="navigation-content-holder" Row="true" Spacing="0" Style="width: 100%; height: 0px; flex-grow: 1; background-color: rgba(35, 35, 35, 1);">
+        <div id="navigation-bar" style="min-width: 12rem; width: 20%; border: 1px solid white;"></div>
+        <MudStack name="controlbar-content-holder" Spacing="0" Justify="Justify.FlexStart" Style="width: 100%; height: 100%;">
+            <ControlBar></ControlBar>
+            <FileViewerInjector FileViewerType="@SettingsStateContainer.SelectedFileViewerType" Directories="@directories" Files="@files"></FileViewerInjector>
+        </MudStack>
+    </MudStack>
+</MudStack>
+
+@code {
+    private List<DirectoryInfo> directories = new();
+    private List<FileInfo> files = new();
+    private string path = string.Empty;
+
+    /// <summary>
+    /// Handles user path change event
+    /// </summary>
+    /// <param name="newPath">New path value</param>
+    public void UserPathChangeHandler(string newPath)
+    {
+        this.path = newPath;
+
+        if (string.IsNullOrEmpty(path)) return;
+
+        directories = FileUtils.GetDirectories(path);
+        files = FileUtils.GetFiles(path);
+    }
+
+    protected override void OnInitialized()
+    {
+        SettingsStateContainer.OnChange += () => InvokeAsync(StateHasChanged);
+    }
+}

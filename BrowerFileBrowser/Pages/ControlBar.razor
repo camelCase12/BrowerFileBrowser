@@ -1,0 +1,24 @@
+﻿@*Chase Brower, 2023*@
+
+@using BrowerFileBrowser.Enums;
+@using MudBlazor;
+@using BrowerFileBrowser.Containers;
+
+@inject SettingsStateContainer SettingsStateContainer
+
+<MudStack Row="false" Spacing="0" Style="width: 100%; height: fit-content;">
+    <MudStack Row="true" Style="width: 100%; height: fit-content;">
+        <MudChipSet SelectedChipChanged="@SelectedFileViewerTypeChanged" Mandatory="true" MultiSelection="false" Filter="true">
+            <MudChip Text="List" Color="Color.Default" SelectedColor="Color.Success" Default="true" Value="FileViewerType.List"></MudChip>
+            <MudChip Text="Grid" Color="Color.Default" SelectedColor="Color.Success" Value="FileViewerType.Grid"></MudChip>
+        </MudChipSet>
+    </MudStack>
+    <MudDivider />
+</MudStack>
+
+@code {
+    private void SelectedFileViewerTypeChanged(MudChip newSelection)
+    {
+        SettingsStateContainer.SetFileViewerType(newSelection?.Value as FileViewerType?);
+    }
+}

@@ -1,0 +1,36 @@
+﻿@*Chase Brower, 2023*@
+
+@using BrowerFileBrowser.Enums;
+@code {
+    [Parameter]
+    public FileViewerType FileViewerType { get; set; }
+
+    [Parameter]
+    public List<FileInfo> Files { get; set; }
+
+    [Parameter]
+    public List<DirectoryInfo> Directories { get; set; }
+
+    private Type CurrentType => GetViewerType(FileViewerType);
+
+    private Dictionary<string, object> ViewerParameters => new()
+    {
+        { "Files", Files },
+        { "Directories", Directories }
+    };
+
+    private Type GetViewerType(FileViewerType viewerType)
+    {
+        switch (viewerType)
+        {
+            case FileViewerType.List:
+                return typeof(ListFileViewer);
+            case FileViewerType.Grid:
+                return typeof(GridFileViewer);
+            default:
+                throw new ArgumentException($"Invalid viewer type: {viewerType}");
+        }
+    }
+}
+
+<DynamicComponent Type="@CurrentType" Parameters="@ViewerParameters" />

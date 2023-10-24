@@ -1,0 +1,32 @@
+﻿@*Chase Brower, 2023*@
+
+@using BrowerFileBrowser.Interfaces;
+@using MudBlazor;
+
+@implements IFileViewer
+
+<MudTable Items="@DirectoriesAndFiles" FixedHeader="true" Hover="true"
+        Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info" Height="100%" Style="height: 0px; flex-grow: 1;">
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Date Modified</MudTh>
+        <MudTh>Type</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.FullName</MudTd>
+        <MudTd DataLabel="Date Modified">@context.LastWriteTime</MudTd>
+        <MudTd DataLabel="Type">@context.Extension</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private bool loading = false;
+
+    private List<FileSystemInfo> DirectoriesAndFiles => Directories.Cast<FileSystemInfo>().Concat(Files.Cast<FileSystemInfo>()).ToList();
+
+    [Parameter]
+    public List<DirectoryInfo> Directories { get; set; } = new();
+
+    [Parameter]
+    public List<FileInfo> Files { get; set; } = new();
+}

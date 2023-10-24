@@ -1,0 +1,80 @@
+﻿@*Chase Brower, 2023*@
+
+@using BrowerFileBrowser.Interfaces;
+@using MudBlazor;
+@using System.IO;
+
+@implements IFileViewer
+
+<style>
+    .square-card {
+        position: relative;
+        width: 100%;
+        padding-top: 100%;
+    }
+
+    .card-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+    }
+
+    .file-card, .directory-card {
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+    .file-card:hover, .directory-card:hover {
+        transform: scale(1.1);
+    }
+
+    .non-hoverable-text {
+        pointer-events: none;
+    }
+</style>
+
+<div style="width: 100%; height: 100%; overflow-x: hidden; overflow-y: scroll; padding: 1rem;">
+    <MudGrid>
+        @foreach (var directory in Directories)
+        {
+            <MudItem xs="6" sm="4" md="3" lg="2">
+                <div class="square-card">
+                    <MudCard Class="directory-card card-content">
+                        <div class="text-center">
+                            <i class="fas fa-folder fa-2x"></i>
+                        </div>
+                        <MudCardContent>
+                            <MudText Class="non-hoverable-text">@directory.Name</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </div>
+            </MudItem>
+        }
+
+        @foreach (var file in Files)
+        {
+            <MudItem xs="6" sm="4" md="3" lg="2">
+                <div class="square-card">
+                    <MudCard Class="file-card card-content">
+                        <div class="text-center">
+                            <i class="fas fa-file fa-2x"></i>
+                        </div>
+                        <MudCardContent>
+                            <MudText Class="non-hoverable-text">@file.Name</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </div>
+            </MudItem>
+        }
+    </MudGrid>
+</div>
+
+@code {
+    [Parameter]
+    public List<DirectoryInfo> Directories { get; set; } = new();
+
+    [Parameter]
+    public List<FileInfo> Files { get; set; } = new();
+}

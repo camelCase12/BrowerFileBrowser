@@ -1,0 +1,25 @@
+﻿
+
+<div id="path-bar" style="width: 100%; height: 3rem;">
+    <div id="path-text-container" style="width: 100%; height: 100%; padding: 0.5rem;" class="frosted-glass">
+        <input @bind-value="@path" type="text" style="width: 100%; height: 100%;" class="frosted-glass-opaque" @onkeypress="@KeyPressHandler"/>
+    </div>
+</div>
+
+@code {
+    private string path = string.Empty;
+
+    /// <summary>
+    /// Bindable event callback triggered when path is changed by user. Passes the new path string.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> PathChangedByUser { get; set; }
+
+    public void KeyPressHandler(KeyboardEventArgs keyboardEventArgs)
+    {
+        if(keyboardEventArgs.Key == "Enter")
+        {
+            PathChangedByUser.InvokeAsync(path);
+        }
+    }
+}
