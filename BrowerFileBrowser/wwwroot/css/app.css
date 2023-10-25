@@ -43,6 +43,10 @@ a, .btn-link {
     color: red;
 }
 
+:root {
+    --mud-palette-surface: rgba(33, 33, 40, 1) !important;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -98,19 +102,15 @@ a, .btn-link {
 }
 
 .frosted-glass-opaque {
-    backdrop-filter: blur(25px);
+    backdrop-filter: blur(5000px);
     background-color: rgba(0, 0, 0, 0.5);
 }
 
 .gradient-background {
-    background-image: url("/images/gradient.svg");
+    background: linear-gradient(to bottom right, red, blue);
     width: 100%;
     height: 100%;
     position: relative;
-}
-
-.gradient {
-    background-image: url("/images/gradient.svg");
 }
 
 input[type="text"] {
@@ -126,3 +126,46 @@ input[type="text"] {
         border-color: #007bff;
         outline: none;
     }
+
+.square-card {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+}
+
+.card-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.file-card, .directory-card {
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+    .file-card:hover, .directory-card:hover {
+        transform: scale(1.1);
+    }
+
+.non-hoverable-text {
+    pointer-events: none;
+}
+
+.no-select {
+    user-select: none;
+}
+
+.selected {
+    background-color: #1E88E5 !important;
+}
+
+    .selected > td {
+        color: white !important;
+    }
+
+        .selected > td .mud-input {
+            color: white !important;
+        }

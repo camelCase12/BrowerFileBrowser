@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿//Chase Brower, 2023
+
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BrowerFileBrowser.Containers;
 

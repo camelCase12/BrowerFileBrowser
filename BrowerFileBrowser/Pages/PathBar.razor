@@ -1,25 +1,37 @@
-﻿
+﻿@*Chase Brower, 2023*@
+
+@using BrowerFileBrowser.Containers;
+
+@inject PathStateContainer PathStateContainer
 
 <div id="path-bar" style="width: 100%; height: 3rem;">
     <div id="path-text-container" style="width: 100%; height: 100%; padding: 0.5rem;" class="frosted-glass">
-        <input @bind-value="@path" type="text" style="width: 100%; height: 100%;" class="frosted-glass-opaque" @onkeypress="@KeyPressHandler"/>
+        <input value="@path" @oninput="@ChangePathHandler" type="text" style="width: 100%; height: 100%; padding: 0.25rem;" class="frosted-glass-opaque" @onkeypress="@KeyPressHandler"/>
     </div>
 </div>
 
 @code {
     private string path = string.Empty;
+    private string changedPath = string.Empty;
 
-    /// <summary>
-    /// Bindable event callback triggered when path is changed by user. Passes the new path string.
-    /// </summary>
     [Parameter]
-    public EventCallback<string> PathChangedByUser { get; set; }
+    public string Path { get; set; } = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        path = Path;
+    }
+
+    public void ChangePathHandler(ChangeEventArgs changeEventArgs)
+    {
+        changedPath = changeEventArgs.Value as string;
+    }
 
     public void KeyPressHandler(KeyboardEventArgs keyboardEventArgs)
     {
         if(keyboardEventArgs.Key == "Enter")
         {
-            PathChangedByUser.InvokeAsync(path);
+            PathStateContainer.SetPath(changedPath);
         }
     }
 }

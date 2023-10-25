@@ -5,14 +5,15 @@
 @using MudBlazor;
 
 @inject SettingsStateContainer SettingsStateContainer
+@inject PathStateContainer PathStateContainer
 
 <MudThemeProvider IsDarkMode="true" />
 
 <MudStack name="page-container" Spacing="0" Style="width: 100%; height: 100%;" Class="gradient-background">
-    <PathBar PathChangedByUser="@UserPathChangeHandler"></PathBar>
-    <MudStack name="navigation-content-holder" Row="true" Spacing="0" Style="width: 100%; height: 0px; flex-grow: 1; background-color: rgba(35, 35, 35, 1);">
+    <PathBar Path="@PathStateContainer.Path"></PathBar>
+    <MudStack name="navigation-content-holder" Row="true" Spacing="0" Style="width: 100%; height: 0px; flex-grow: 1; background-color: var(--mud-palette-surface);">
         <div id="navigation-bar" style="min-width: 12rem; width: 20%; border: 1px solid white;"></div>
-        <MudStack name="controlbar-content-holder" Spacing="0" Justify="Justify.FlexStart" Style="width: 100%; height: 100%;">
+        <MudStack name="controlbar-content-holder" Spacing="0" Justify="Justify.FlexStart" Style="width: 100%; height: 100%;" Class="no-select">
             <ControlBar></ControlBar>
             <FileViewerInjector FileViewerType="@SettingsStateContainer.SelectedFileViewerType" Directories="@directories" Files="@files"></FileViewerInjector>
         </MudStack>
@@ -22,24 +23,22 @@
 @code {
     private List<DirectoryInfo> directories = new();
     private List<FileInfo> files = new();
-    private string path = string.Empty;
 
     /// <summary>
     /// Handles user path change event
     /// </summary>
-    /// <param name="newPath">New path value</param>
-    public void UserPathChangeHandler(string newPath)
+    public void UserPathChangeHandler()
     {
-        this.path = newPath;
+        if (PathStateContainer.Path == string.Empty) return;
 
-        if (string.IsNullOrEmpty(path)) return;
-
-        directories = FileUtils.GetDirectories(path);
-        files = FileUtils.GetFiles(path);
+        directories = FileUtils.GetDirectories(PathStateContainer.Path);
+        files = FileUtils.GetFiles(PathStateContainer.Path);
+        InvokeAsync(StateHasChanged);
     }
 
     protected override void OnInitialized()
     {
         SettingsStateContainer.OnChange += () => InvokeAsync(StateHasChanged);
+        PathStateContainer.OnChange += () => UserPathChangeHandler();
     }
 }

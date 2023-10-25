@@ -5,9 +5,12 @@
 @using BrowerFileBrowser.Containers;
 
 @inject SettingsStateContainer SettingsStateContainer
+@inject PathStateContainer PathStateContainer
 
 <MudStack Row="false" Spacing="0" Style="width: 100%; height: fit-content;">
-    <MudStack Row="true" Style="width: 100%; height: fit-content;">
+    <MudStack Row="true" Style="width: 100%; height: fit-content;" AlignItems="AlignItems.Center" Spacing="2">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="@UpArrowClicked"></MudIconButton>
+        <MudDivider Vertical="true" Style="height:60%;"></MudDivider>
         <MudChipSet SelectedChipChanged="@SelectedFileViewerTypeChanged" Mandatory="true" MultiSelection="false" Filter="true">
             <MudChip Text="List" Color="Color.Default" SelectedColor="Color.Success" Default="true" Value="FileViewerType.List"></MudChip>
             <MudChip Text="Grid" Color="Color.Default" SelectedColor="Color.Success" Value="FileViewerType.Grid"></MudChip>
@@ -17,6 +20,20 @@
 </MudStack>
 
 @code {
+    private void UpArrowClicked(MouseEventArgs args)
+    {
+        long leftMouse = 0;
+        if(args.Button == leftMouse)
+        {
+            string parentPath = Directory.GetParent(PathStateContainer.Path)?.FullName ?? string.Empty;
+
+            if(!string.IsNullOrEmpty(parentPath))
+            {
+                PathStateContainer.SetPath(parentPath);
+            }
+        }
+    }
+
     private void SelectedFileViewerTypeChanged(MudChip newSelection)
     {
         SettingsStateContainer.SetFileViewerType(newSelection?.Value as FileViewerType?);
