@@ -1,6 +1,7 @@
 ﻿@*Chase Brower, 2023*@
 
 @using BrowerFileBrowser.Enums;
+@using BrowerFileBrowser.Utils;
 @using MudBlazor;
 @using BrowerFileBrowser.Containers;
 
@@ -9,6 +10,8 @@
 
 <MudStack Row="false" Spacing="0" Style="width: 100%; height: fit-content;">
     <MudStack Row="true" Style="width: 100%; height: fit-content;" AlignItems="AlignItems.Center" Spacing="2">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft" OnClick="@LeftArrowClicked" Disabled="@PathStateContainer.AtBack"></MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowRight" OnClick="@RightArrowClicked" Disabled="@PathStateContainer.AtFront"></MudIconButton>
         <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="@UpArrowClicked"></MudIconButton>
         <MudDivider Vertical="true" Style="height:60%;"></MudDivider>
         <MudChipSet SelectedChipChanged="@SelectedFileViewerTypeChanged" Mandatory="true" MultiSelection="false" Filter="true">
@@ -22,20 +25,37 @@
 @code {
     private void UpArrowClicked(MouseEventArgs args)
     {
-        long leftMouse = 0;
-        if(args.Button == leftMouse)
-        {
-            string parentPath = Directory.GetParent(PathStateContainer.Path)?.FullName ?? string.Empty;
+        if (!MouseUtils.IsLeftMouse(args) || string.IsNullOrEmpty(PathStateContainer.Path)) return;
 
-            if(!string.IsNullOrEmpty(parentPath))
-            {
-                PathStateContainer.SetPath(parentPath);
-            }
+        string parentPath = Directory.GetParent(PathStateContainer.Path)?.FullName ?? string.Empty;
+
+        if(!string.IsNullOrEmpty(parentPath))
+        {
+            PathStateContainer.SetPath(parentPath);
         }
+    }
+
+    private void LeftArrowClicked(MouseEventArgs args)
+    {
+        if (!MouseUtils.IsLeftMouse(args)) return;
+
+        PathStateContainer.NavigateBackward();
+    }
+    private void RightArrowClicked(MouseEventArgs args)
+    {
+        if (!MouseUtils.IsLeftMouse(args)) return;
+
+        PathStateContainer.NavigateForward();
     }
 
     private void SelectedFileViewerTypeChanged(MudChip newSelection)
     {
         SettingsStateContainer.SetFileViewerType(newSelection?.Value as FileViewerType?);
+    }
+
+    protected override void OnInitialized()
+    {
+        PathStateContainer.OnChange += () => InvokeAsync(StateHasChanged);
+        base.OnInitialized();
     }
 }

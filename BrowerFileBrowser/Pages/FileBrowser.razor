@@ -1,6 +1,9 @@
-﻿@page "/"
+﻿@*Chase Brower, 2023*@
+
+@page "/"
 @using BrowerFileBrowser.Containers;
 @using BrowerFileBrowser.Enums;
+@using BrowerFileBrowser.Models;
 @using BrowerFileBrowser.Utils;
 @using MudBlazor;
 
@@ -10,12 +13,12 @@
 <MudThemeProvider IsDarkMode="true" />
 
 <MudStack name="page-container" Spacing="0" Style="width: 100%; height: 100%;" Class="gradient-background">
-    <PathBar Path="@PathStateContainer.Path"></PathBar>
+    <PathBar Path="@PathStateContainer.Path" />
     <MudStack name="navigation-content-holder" Row="true" Spacing="0" Style="width: 100%; height: 0px; flex-grow: 1; background-color: var(--mud-palette-surface);">
-        <div id="navigation-bar" style="min-width: 12rem; width: 20%; border: 1px solid white;"></div>
+        <NavigationBar />
         <MudStack name="controlbar-content-holder" Spacing="0" Justify="Justify.FlexStart" Style="width: 100%; height: 100%;" Class="no-select">
-            <ControlBar></ControlBar>
-            <FileViewerInjector FileViewerType="@SettingsStateContainer.SelectedFileViewerType" Directories="@directories" Files="@files"></FileViewerInjector>
+            <ControlBar />
+            <FileViewerInjector FileViewerType="@SettingsStateContainer.SelectedFileViewerType" Directories="@directories" Files="@files" />
         </MudStack>
     </MudStack>
 </MudStack>
@@ -31,8 +34,8 @@
     {
         if (PathStateContainer.Path == string.Empty) return;
 
-        directories = FileUtils.GetDirectories(PathStateContainer.Path);
-        files = FileUtils.GetFiles(PathStateContainer.Path);
+        directories = FileUtils.TryGetDirectories(PathStateContainer.Path, out DirectoryInfoResponse dirResponse) ? dirResponse.DirectoryInfos : directories;
+        files = FileUtils.TryGetFiles(PathStateContainer.Path, out FileInfoResponse fileResponse) ? fileResponse.FileInfos : files;
         InvokeAsync(StateHasChanged);
     }
 

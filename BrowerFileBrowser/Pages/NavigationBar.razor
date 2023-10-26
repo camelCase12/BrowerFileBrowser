@@ -1,0 +1,21 @@
+﻿@*Chase Brower, 2023*@
+
+@using MudBlazor;
+
+<div id="navigation-bar" style="min-width: 12rem; width: 20%; padding: 0.5rem;">
+    <MudTreeView T="string" Hover="true">
+        <MudTreeViewItem Value="@("Applications")">
+            <MudTreeViewItem Value="@("Terminal")" />
+        </MudTreeViewItem>
+        <MudTreeViewItem Value="@("Documents")">
+            <MudTreeViewItem Value="@("MudBlazor")">
+                <MudTreeViewItem Value="@("Api")" />
+                <MudTreeViewItem Value="@("Components")" />
+            </MudTreeViewItem>
+        </MudTreeViewItem>
+    </MudTreeView>
+</div>
+
+@code {
+    
+}
