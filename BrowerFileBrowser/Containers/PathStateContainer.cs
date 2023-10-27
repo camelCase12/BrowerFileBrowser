@@ -17,7 +17,7 @@ public class PathStateContainer : StateContainer
 
     private int depth = 0;
 
-    public void SetPath(string path)
+    public void SetPath(string? path)
     {
         Path = path ?? string.Empty;
 

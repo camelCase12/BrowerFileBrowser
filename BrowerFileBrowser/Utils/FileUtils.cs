@@ -6,7 +6,7 @@ namespace BrowerFileBrowser.Utils;
 
 public class FileUtils
 {
-    public static bool TryGetDirectories(string path, out DirectoryInfoResponse directoryInfoResponse)
+    public static bool TryGetDirectories(string? path, out DirectoryInfoResponse directoryInfoResponse)
     {
         List<DirectoryInfo> directories = new();
         try

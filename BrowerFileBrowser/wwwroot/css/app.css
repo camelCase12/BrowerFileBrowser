@@ -45,6 +45,7 @@ a, .btn-link {
 
 :root {
     --mud-palette-surface: rgba(33, 33, 40, 1) !important;
+    --mud-palette-text-primary: rgba(255, 255, 255, 1) !important;
 }
 
 #blazor-error-ui {

@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using BrowerFileBrowser.Data;
+﻿//Chase Brower, 2023
+
+using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
 using BrowerFileBrowser.Containers;
+using BrowerFileBrowser.Interfaces;
+using BrowerFileBrowser.Factory;
 
 namespace BrowerFileBrowser;
 
@@ -20,6 +23,7 @@ public static class MauiProgram
 			});
 
         StateContainer.RegisterAllDerived(builder.Services);
+        builder.Services.AddSingleton<IDefaultNodeProvider>(DefaultNodeProviderFactory.Create());
 
         builder.Services.AddMauiBlazorWebView();
 		
@@ -27,9 +31,7 @@ public static class MauiProgram
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
 #endif
-
-		builder.Services.AddSingleton<WeatherForecastService>();
-
+		
         builder.Services.AddMudServices();
 
         return builder.Build();
