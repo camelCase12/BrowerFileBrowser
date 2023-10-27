@@ -4,6 +4,7 @@
 @using BrowerFileBrowser.Interfaces;
 @using BrowerFileBrowser.Models;
 @using MudBlazor;
+@using System.Diagnostics;
 
 @inject PathStateContainer PathStateContainer
 
@@ -18,7 +19,13 @@
         <MudTh>Type</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.FullName</MudTd>
+        <MudTd DataLabel="Name">
+            @if (context is DirectoryInfo)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Folder" />
+            }
+            @context.Name
+        </MudTd>
         <MudTd DataLabel="Date Modified">@context.LastWriteTime</MudTd>
         <MudTd DataLabel="Type">@context.Extension</MudTd>
     </RowTemplate>
