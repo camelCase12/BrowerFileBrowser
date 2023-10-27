@@ -10,7 +10,7 @@ public class SettingsStateContainer : StateContainer
 
     public void SetFileViewerType(FileViewerType? selectedFileViewerType)
     {
-        SelectedFileViewerType = selectedFileViewerType ?? FileViewerType.List;
+        SelectedFileViewerType = selectedFileViewerType ?? default;
         NotifyStateChanged();
     }
 }
