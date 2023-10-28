@@ -4,6 +4,8 @@ VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowerFileBrowser", "BrowerFileBrowser\BrowerFileBrowser.csproj", "{086F04FB-9BE8-4050-AC51-9BD40B9BA2E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrowerFileBrowserTest", "BrowerFileBrowserTest\BrowerFileBrowserTest.csproj", "{FA8A5316-52BD-4A2B-BA67-C61314A8C9E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,12 +18,16 @@ Global
 		{086F04FB-9BE8-4050-AC51-9BD40B9BA2E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{086F04FB-9BE8-4050-AC51-9BD40B9BA2E8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{086F04FB-9BE8-4050-AC51-9BD40B9BA2E8}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{FA8A5316-52BD-4A2B-BA67-C61314A8C9E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA8A5316-52BD-4A2B-BA67-C61314A8C9E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA8A5316-52BD-4A2B-BA67-C61314A8C9E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA8A5316-52BD-4A2B-BA67-C61314A8C9E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {96AF2AB4-10C7-47A8-8B08-EC4CEB20372B}
 		        SolutionGuid = {61F7FB11-1E47-470C-91E2-47F8143E1572}
+		SolutionGuid = {96AF2AB4-10C7-47A8-8B08-EC4CEB20372B}
 	EndGlobalSection
 EndGlobal

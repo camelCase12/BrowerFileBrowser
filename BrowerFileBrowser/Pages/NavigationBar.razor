@@ -12,7 +12,7 @@
     <MudTreeView Items="@DefaultNodes" Hover="true" Width="100%" SelectedValueChanged="SelectedFolderChanged" T="FileSystemNode"
                  ServerData="@LoadNextNode">
         <ItemTemplate Context="item">
-            <MudTreeViewItem Items="@item.Children" Icon="@Icons.Material.Filled.Folder" Value="@item" CanExpand="!item.Pinnable">
+            <MudTreeViewItem Icon="@Icons.Material.Filled.Folder" Value="@item" CanExpand="!item.Pinnable">
                 <BodyContent>
                     <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
                         <MudText Style="justify-self: start;">@item.PreferredName</MudText>
@@ -46,8 +46,6 @@
 
     private async Task<HashSet<FileSystemNode>> LoadNextNode(FileSystemNode parentNode)
     {
-        if (parentNode.Children.Count > 0) return parentNode.Children;
-
         return parentNode.GetChildren();
     }
 }

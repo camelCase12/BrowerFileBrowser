@@ -16,7 +16,7 @@ public class FileSystemNode
     {
         if (Children.Count > 0) return Children;
 
-        if(!FileUtils.TryGetDirectories(FileSystemInfo?.FullName, out DirectoryInfoResponse response))
+        if (!FileUtils.TryGetDirectories(FileSystemInfo?.FullName, out DirectoryInfoResponse response))
         {
             return new();
         }
