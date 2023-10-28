@@ -6,17 +6,17 @@
 @using MudBlazor;
 @using System.Diagnostics;
 
-@inject PathStateContainer PathStateContainer
+@inject PathStateContainer PathStateContainer;
 
-@implements IFileViewer
+@implements IFileViewer;
 
 <MudTable Items="@DirectoriesAndFiles" @ref="@mudTable" FixedHeader="true" Hover="true" RowClassFunc="@SelectedRowClassFunc" 
-        T="@FileSystemInfo" OnRowClick="RowClickEvent" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info"
-        Height="100%" Style="height: 0px; flex-grow: 1;">
+        T="@FileSystemInfo" OnRowClick="@RowClickEvent" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info"
+          Height="100%" Style="height: 0px; flex-grow: 1;" SortLabel="Sort By">
     <HeaderContent>
-        <MudTh>Name</MudTh>
-        <MudTh>Date Modified</MudTh>
-        <MudTh>Type</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<FileSystemInfo, object>(x =>x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<FileSystemInfo, object>(x =>x.LastWriteTime)">Date Modified</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<FileSystemInfo, object>(x =>x.Extension)">Type</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">
