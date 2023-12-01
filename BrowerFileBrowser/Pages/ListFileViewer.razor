@@ -55,7 +55,7 @@
 
         if(tableRowClickEventArgs.Item is DirectoryInfo)
         {
-            PathStateContainer.SetPath(Path.Combine(PathStateContainer.Path, tableRowClickEventArgs.Item.FullName));
+            PathStateContainer.SetPath(tableRowClickEventArgs.Item.FullName);
         }
         else if (tableRowClickEventArgs.Item is FileInfo)
         {

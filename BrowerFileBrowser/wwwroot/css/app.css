@@ -149,7 +149,16 @@ input[type="text"] {
 
     .file-card:hover, .directory-card:hover {
         transform: scale(1.1);
+        background-color: var(--mud-palette-text-disabled);
     }
+
+.selected-card {
+    background-color: var(--mud-palette-info) !important;
+}
+
+.unselected-card {
+    background-color: var(--mud-palette-surface) !important;
+}
 
 .non-hoverable-text {
     pointer-events: none;
@@ -170,3 +179,8 @@ input[type="text"] {
         .selected > td .mud-input {
             color: white !important;
         }
+
+.mud-tooltip-root {
+    max-width: 100% !important;
+}
+

@@ -1,10 +1,15 @@
 ﻿@*Chase Brower, 2023*@
 
+@using BrowerFileBrowser.Containers
 @using BrowerFileBrowser.Interfaces;
+@using BrowerFileBrowser.Models
 @using MudBlazor;
 @using System.IO;
+@using BrowerFileBrowser.Utils;
 
 @implements IFileViewer
+
+@inject PathStateContainer PathStateContainer
 
 <div style="width: 100%; height: 100%; overflow-x: hidden; overflow-y: scroll; padding: 1rem;">
     <MudGrid>
@@ -12,12 +17,14 @@
         {
             <MudItem xs="6" sm="4" md="3" lg="2">
                 <div class="square-card">
-                    <MudCard Class="directory-card card-content">
-                        <div class="text-center">
-                            <i class="fas fa-folder fa-2x"></i>
-                        </div>
-                        <MudCardContent>
-                            <MudText Class="non-hoverable-text">@directory.Name</MudText>
+                    <MudCard Class="@GetCardClass(directory)" @onclick="() => HandleDirectoryClick(directory)">
+                        <MudCardContent Style="height: 100%;">
+                            <MudStack Style="width: 100%; height: 100%;" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+                                <MudIcon Icon="@Icons.Material.Filled.Folder" Style="font-size: 80%; flex-grow: 1; width: 100%;" />
+                                <MudTooltip Text="@directory.Name">
+                                    <MudText Class="non-hoverable-text" Style="overflow-x: hidden; text-wrap: nowrap;">@directory.Name</MudText>
+                                </MudTooltip>
+                            </MudStack>
                         </MudCardContent>
                     </MudCard>
                 </div>
@@ -28,12 +35,17 @@
         {
             <MudItem xs="6" sm="4" md="3" lg="2">
                 <div class="square-card">
-                    <MudCard Class="file-card card-content">
-                        <div class="text-center">
-                            <i class="fas fa-file fa-2x"></i>
-                        </div>
-                        <MudCardContent>
-                            <MudText Class="non-hoverable-text">@file.Name</MudText>
+                    <MudCard Class="@GetCardClass(file)" @onclick="() => HandleFileClick(file)">
+                        <MudCardContent Style="height: 100%;">
+                            <MudStack Style="width: 100%; height: 100%;" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+                                @if(ImageUtils.IsSupportedSkiaSharpImage(file.Extension)) 
+                                {
+                                    <MudImage ObjectFit="ObjectFit.Contain" Src="@ImageUtils.GetThumbnailAsDataURL(file)" Style="flex-grow: 1; width: 100%;" />
+                                }
+                                <MudTooltip Text="@file.Name">
+                                    <MudText Class="non-hoverable-text" Style="overflow-x: hidden; text-wrap: nowrap;">@file.Name</MudText>
+                                </MudTooltip>
+                            </MudStack>
                         </MudCardContent>
                     </MudCard>
                 </div>
@@ -43,9 +55,58 @@
 </div>
 
 @code {
+    DoubleClickDetector doubleClickDetector = new();
+
     [Parameter]
     public List<DirectoryInfo> Directories { get; set; } = new();
 
     [Parameter]
     public List<FileInfo> Files { get; set; } = new();
+
+    private List<FileSystemInfo> selections = new();
+
+    private void HandleDirectoryClick(DirectoryInfo clickedDirectory)
+    {
+        if (!doubleClickDetector.IsDoubleClick(clickedDirectory))
+        {
+            ToggleSelection(clickedDirectory, selections);
+            return;
+        }
+
+
+        PathStateContainer.SetPath(clickedDirectory.FullName);
+    }
+
+    private void HandleFileClick(FileInfo clickedFile)
+    {
+        if (!doubleClickDetector.IsDoubleClick(clickedFile))
+        {
+            ToggleSelection(clickedFile, selections);
+            return;
+        }
+
+        throw new NotImplementedException();
+    }
+
+    private void ToggleSelection<T>(T item, List<T> list)
+    {
+        if (list.Contains(item))
+        {
+            list.Remove(item);
+        }
+        else
+        {
+            list.Clear();
+            list.Add(item);
+        }
+    }
+
+    private string GetCardClass(object item)
+    {
+        bool isSelected = selections.Contains(item) || selections.Contains(item);
+
+        string fileCardClass = item is FileInfo ? "file-card" : "directory-card";
+
+        return isSelected ? $"{fileCardClass} selected-card card-content" : $"{fileCardClass} unselected-card card-content";
+    }
 }
