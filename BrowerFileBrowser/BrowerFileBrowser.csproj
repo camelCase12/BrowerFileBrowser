@@ -64,6 +64,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Update="Platforms\Android\AndroidThumbnailService.cs">
+        <ExcludeFromCurrentConfiguration>true</ExcludeFromCurrentConfiguration>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
       <Content Update="wwwroot\images\gradient.svg">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>

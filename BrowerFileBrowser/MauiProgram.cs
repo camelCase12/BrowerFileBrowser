@@ -21,7 +21,8 @@ public static class MauiProgram
 			});
 
         StateContainer.RegisterAllDerived(builder.Services);
-        builder.Services.AddSingleton<IDefaultNodeProvider>(DefaultNodeProviderFactory.Create());
+        builder.Services.AddSingleton(DefaultNodeProviderFactory.Create());
+        builder.Services.AddSingleton<IThumbnailService, ThumbnailService>();
 
         builder.Services.AddMauiBlazorWebView();
 		
