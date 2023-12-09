@@ -1,0 +1,31 @@
+﻿@*Chase Brower, 2023*@
+
+@using BrowerFileBrowser.DAO
+@using MudBlazor;
+
+@namespace BrowerFileBrowser.Pages
+
+@{
+    List<string> tags = FileTagDAO.GetTagsForFile(File.FullName);
+    @if (tags.Any())
+    {
+        <MudTooltip Color="Color.Primary" Placement="Placement.Top">
+                <ChildContent>
+                    <MudIcon Icon="@Icons.Material.Filled.LocalOffer" />
+                </ChildContent>
+                <TooltipContent>
+                    <MudChipSet>
+                        @foreach (string tag in tags)
+                        {
+                            <MudChip Text="@tag" Color="Color.Default" Variant="Variant.Filled"></MudChip>
+                        }
+                    </MudChipSet>
+            </TooltipContent>
+        </MudTooltip>
+    }
+}
+@code {
+    [Parameter]
+    [EditorRequired]
+    public FileInfo File { get; set; }
+}

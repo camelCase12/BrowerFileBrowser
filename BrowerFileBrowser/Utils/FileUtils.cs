@@ -4,7 +4,7 @@ using BrowerFileBrowser.Models;
 
 namespace BrowerFileBrowser.Utils;
 
-public class FileUtils
+public static class FileUtils
 {
     public static bool TryGetDirectories(string? path, out DirectoryInfoResponse directoryInfoResponse)
     {

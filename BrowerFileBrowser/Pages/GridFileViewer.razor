@@ -1,6 +1,7 @@
 ﻿@*Chase Brower, 2023*@
 
 @using BrowerFileBrowser.Containers
+@using BrowerFileBrowser.DAO
 @using BrowerFileBrowser.Interfaces;
 @using BrowerFileBrowser.Models
 @using MudBlazor;
@@ -10,7 +11,10 @@
 @implements IFileViewer
 
 @inject IThumbnailService ThumbnailService
+@inject TagMessageContainer TagMessageContainer
 @inject PathStateContainer PathStateContainer
+
+@namespace BrowerFileBrowser.Pages
 
 <div style="width: 100%; height: 100%; overflow-x: hidden; overflow-y: scroll; padding: 1rem;">
     <MudGrid>
@@ -38,6 +42,12 @@
                 <div class="square-card">
                     <MudCard Class="@GetCardClass(file)" @onclick="() => HandleFileClick(file)">
                         <MudCardContent Style="height: 100%;">
+                            <div style="position:absolute; top:1rem; left:1rem; padding:12px;">
+                                <TagList File="@file" />
+                            </div>
+                            <div style="top: 1rem; right: 1rem; position: absolute;">
+                                <AddTagMenu File="@file" />
+                            </div>
                             <MudStack Style="width: 100%; height: 100%;" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
                                 @if (thumbnailCache.TryGetValue(file.FullName, out var thumbnailUrl))
                                 {
@@ -46,7 +56,9 @@
                                     </MudContainer>
                                 }
                                 <MudTooltip Text="@file.Name">
-                                    <MudText Class="non-hoverable-text" Style="overflow-x: hidden; text-wrap: nowrap;">@file.Name</MudText>
+                                    <ChildContent>
+                                        <MudText Class="non-hoverable-text" Style="overflow-x: hidden; text-wrap: nowrap;">@file.Name</MudText>
+                                    </ChildContent>
                                 </MudTooltip>
                             </MudStack>
                         </MudCardContent>
@@ -58,6 +70,8 @@
 </div>
 
 @code {
+    private List<string> Tags = new List<string> { "Tag1", "Tag2", "Tag3" }; // Replace with your tags
+
     DoubleClickDetector doubleClickDetector = new();
 
     [Parameter]
@@ -94,6 +108,13 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    private void HandleAddTagClick(FileInfo clickedFile)
+    {
+        FileTagDAO.AddFile(clickedFile.FullName);
+        FileTagDAO.AddTag("bruh3");
+        FileTagDAO.MapFileToTag(clickedFile.FullName, "bruh3");
+    }
+
     private void HandleDirectoryClick(DirectoryInfo clickedDirectory)
     {
         if (!doubleClickDetector.IsDoubleClick(clickedDirectory))
@@ -101,7 +122,6 @@
             ToggleSelection(clickedDirectory, selections);
             return;
         }
-
 
         PathStateContainer.SetPath(clickedDirectory.FullName);
     }
@@ -137,5 +157,10 @@
         string fileCardClass = item is FileInfo ? "file-card" : "directory-card";
 
         return isSelected ? $"{fileCardClass} selected-card card-content" : $"{fileCardClass} unselected-card card-content";
+    }
+
+    protected override void OnInitialized()
+    {
+        TagMessageContainer.OnChange += () => InvokeAsync(StateHasChanged);
     }
 }

@@ -9,7 +9,12 @@ public static class ImageUtils
 {
     private static readonly List<string> supportedImageExtensions = new()
     {
-        ".png", ".jpg", ".gif", ".bmp", ".webp", ".ico", ".tiff", ".wbmp", ".pkm" 
+        ".png", ".jpg", ".gif", ".bmp", ".webp", ".ico", ".tiff", ".wbmp", ".pkm"
+    };
+
+    private static readonly List<string> supportedVectorExtensions = new()
+    {
+        ".svg"
     };
 
     private static readonly List<string> supportedVideoExtensions = new()
@@ -24,12 +29,26 @@ public static class ImageUtils
             return GetImageAsDataURL(fileInfo);
         }
 
+        else if (supportedVectorExtensions.Contains(fileInfo.Extension))
+        {
+            return GetVectorAsDataURL(fileInfo);
+        }
+
         else if (supportedVideoExtensions.Contains(fileInfo.Extension))
         {
             return await GetVideoThumbnailAsDataURLAsync(thumbnailService, fileInfo.FullName, maxPixelLength);
         }
 
         return string.Empty;
+    }
+
+    public static string GetVectorAsDataURL(FileInfo fileInfo)
+    {
+        string vectorData = File.ReadAllText(fileInfo.FullName);
+        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(vectorData);
+        string base64 = Convert.ToBase64String(bytes);
+
+        return $"data:image/svg+xml;base64,{base64}";
     }
 
     public static string GetImageAsDataURL(FileInfo fileInfo, float thumbnailWidth = 150, float thumbnailHeight = 150)

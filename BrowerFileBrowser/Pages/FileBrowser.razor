@@ -34,8 +34,16 @@
     {
         if (PathStateContainer.Path == string.Empty) return;
 
-        directories = FileUtils.TryGetDirectories(PathStateContainer.Path, out DirectoryInfoResponse dirResponse) ? dirResponse.DirectoryInfos : directories;
-        files = FileUtils.TryGetFiles(PathStateContainer.Path, out FileInfoResponse fileResponse) ? fileResponse.FileInfos : files;
+        if (PathStateContainer.Path.StartsWith("Tags:/"))
+        {
+            directories = new();
+            files = TagUtils.GetFiles(PathStateContainer.Path);
+        }
+        else
+        {
+            directories = FileUtils.TryGetDirectories(PathStateContainer.Path, out DirectoryInfoResponse dirResponse) ? dirResponse.DirectoryInfos : directories;
+            files = FileUtils.TryGetFiles(PathStateContainer.Path, out FileInfoResponse fileResponse) ? fileResponse.FileInfos : files;
+        }
         InvokeAsync(StateHasChanged);
     }
 

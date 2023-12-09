@@ -1,0 +1,116 @@
+﻿@*Chase Brower, 2023*@
+
+@using BrowerFileBrowser.Containers
+@using BrowerFileBrowser.DAO
+@using MudBlazor;
+
+@inject IJSRuntime JSRuntime
+@inject TagMessageContainer TagMessageContainer
+
+@namespace BrowerFileBrowser.Pages
+
+<MudIconButton Icon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Info" OnClick="@TogglePopover" />
+
+<MudPopover Open="@PopoverOpen" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.BottomCenter" Style="padding: 0.75rem;">
+    @{
+        List<string> tags = FileTagDAO.GetTagsForFile(File.FullName);
+    }
+    <div>
+        <MudStack>
+            <MudText>Tags</MudText>
+            <MudStack Row="true" Spacing="0">
+                @foreach (string tag in tags)
+                {
+                    <MudChip Text="@tag" OnClose="Removed" Color="Color.Primary" Variant="Variant.Filled"></MudChip>
+                }
+            </MudStack>
+            <MudText>Recent Tags</MudText>
+            <MudStack Row="true" Spacing="0">
+                @foreach (string tag in TagMessageContainer.RecentTags.Where(x => !tags.Contains(x)))
+                {
+                    string cacheTag = tag;
+                    <MudChip Text="@tag" Color="Color.Primary" Variant="Variant.Filled" OnClick="() => AddTag(cacheTag)"></MudChip>
+                }
+            </MudStack>
+        </MudStack>
+    </div>
+    <div>
+        <MudFocusTrap DefaultFocus="DefaultFocus.FirstChild">
+            <MudTextField TextUpdateSuppression=false Value=@TagEntry T="string" OnKeyDown="HandleTagEntryKeyDown" ValueChanged="() => {}"></MudTextField>
+        </MudFocusTrap>
+    </div>
+</MudPopover>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public FileInfo File { get; set; }
+
+    private string TagEntry { get; set; } = string.Empty;
+
+    private bool PopoverOpen { get; set; } = false;
+
+    private void TogglePopover()
+    {
+        PopoverOpen = !PopoverOpen;
+        TagEntry = string.Empty;
+    }
+
+    public void Removed(MudChip tagToRemove)
+    {
+        FileTagDAO.UnmapFileFromTag(File.FullName, tagToRemove.Text);
+        TagMessageContainer.TagStateChanged();
+
+        StateHasChanged();
+    }
+
+    public void AddTag(string tag)
+    {
+        if (string.IsNullOrEmpty(tag)) return;
+
+        FileTagDAO.AddTag(tag);
+        FileTagDAO.AddFile(File.FullName);
+        FileTagDAO.MapFileToTag(File.FullName, tag);
+        TagMessageContainer.AddRecentTag(tag);
+
+        TagMessageContainer.TagStateChanged();
+
+        tag = string.Empty;
+
+        StateHasChanged();
+    }
+
+    public void HandleTagEntryKeyDown(KeyboardEventArgs key)
+    {
+        if (key.Key.Length == 1 && char.IsAsciiLetterOrDigit(key.Key.FirstOrDefault()))
+        {
+            TagEntry += key.Key;
+        }
+
+        if(key.Key == "Backspace")
+        {
+            if(TagEntry.Length > 0)
+                TagEntry = TagEntry.Remove(TagEntry.Length - 1);
+        }
+
+        if (key.Key == "Enter")
+        {
+            AddTag(TagEntry);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("addOutsideClickListener", DotNetObjectReference.Create(this));
+        }
+    }
+
+    [JSInvokable]
+    public void ClosePopover()
+    {
+        PopoverOpen = false;
+        StateHasChanged();
+    }
+}

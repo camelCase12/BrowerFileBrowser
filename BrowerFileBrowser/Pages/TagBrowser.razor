@@ -1,0 +1,128 @@
+﻿@*Chase Brower, 2023*@
+
+@using BrowerFileBrowser.Containers
+@using BrowerFileBrowser.DAO
+@using BrowerFileBrowser.Interfaces
+@using BrowerFileBrowser.Utils
+@using MudBlazor;
+@using System.Diagnostics;
+
+@inject IJSRuntime JSRuntime
+
+@inject IThumbnailService ThumbnailService
+@inject PathStateContainer PathStateContainer
+
+<div>
+    <MudIconButton Icon="@Icons.Material.Filled.LocalOffer" Color="Color.Info" OnClick="@TogglePopover" />
+
+    <MudPopover Open="@PopoverOpen" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" Style="padding: 0.75rem; width: 50vw; height: 50vh;">
+        @{
+            List<string> tags = FileTagDAO.GetTags();
+        }
+        <MudGrid Style="width:100%; height:auto; max-height:100%; overflow-y:scroll;" Spacing="0">
+            <div style="position:absolute; top:1rem; right:1rem;">
+                <MudTooltip Text="Open Tag Db Location">
+                    <MudIconButton Icon="@Icons.Material.Filled.Folder" OnClick="OpenDbFolder" />
+                </MudTooltip>
+            </div>
+            @foreach(string tag in tags) 
+            {
+                string cacheTag = tag;
+                <MudItem>
+                    <MudTooltip>
+                        <ChildContent>
+                            <MudChip Text="@tag" Color="Color.Primary" onmouseover="@(() => GenerateThumbnail(cacheTag))" OnClick="() => TagClicked(cacheTag)"></MudChip>
+                        </ChildContent>
+                        <TooltipContent>
+                            @if (thumbnailCache.TryGetValue(cacheTag, out string thumbnailUrl))
+                            {
+                                <MudImage ObjectFit="ObjectFit.Contain" Src="@thumbnailUrl" Style="width: 10rem; height: 10rem;" />
+                            }
+                            else
+                            {
+                                @if (filenameCache.TryGetValue(cacheTag, out string filename))
+                                {
+                                    <MudText>@filename</MudText>
+                                }
+                                else
+                                {
+                                    <MudText>Fetching data...</MudText>
+                                }
+                            }
+                        </TooltipContent>
+                    </MudTooltip>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudPopover>
+</div>
+
+@code {
+    private bool PopoverOpen { get; set; } = false;
+
+    private Dictionary<string, string> thumbnailCache = new();
+    private Dictionary<string, string> filenameCache = new();
+
+    private string dbLocation = Path.Combine(FileSystem.Current.AppDataDirectory, "Database");
+
+    public void OpenDbFolder(MouseEventArgs e) 
+    {
+        if (OperatingSystem.IsWindows()) 
+        {
+            Process.Start("explorer.exe", DAO.DBDirectory);
+        }
+    }
+
+    private async Task GenerateThumbnail(string tag)
+    {
+        if (thumbnailCache.ContainsKey(tag)) return;
+
+        FileInfo file;
+        try
+        {
+            file = new FileInfo(FileTagDAO.GetFirstFileForTag(tag));
+        }
+        catch (Exception) 
+        {
+            
+            return;
+        }
+
+        var thumbnailUrl = await ImageUtils.GetThumbnailAsDataURL(ThumbnailService, file, 150);
+
+        if (thumbnailUrl == string.Empty) 
+        {
+            filenameCache[tag] = file.Name;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        thumbnailCache[tag] = thumbnailUrl;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void TogglePopover()
+    {
+        PopoverOpen = !PopoverOpen;
+    }
+
+    public void TagClicked(string tag)
+    {
+        PathStateContainer.SetPath($"Tags:/{tag}");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("addOutsideClickListener", DotNetObjectReference.Create(this));
+        }
+    }
+
+    [JSInvokable]
+    public void ClosePopover()
+    {
+        PopoverOpen = false;
+        StateHasChanged();
+    }
+}

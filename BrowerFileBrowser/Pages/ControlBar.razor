@@ -18,6 +18,8 @@
             <MudChip Text="List" Color="Color.Default" SelectedColor="Color.Success" Default="true" Value="FileViewerType.List"></MudChip>
             <MudChip Text="Grid" Color="Color.Default" SelectedColor="Color.Success" Value="FileViewerType.Grid"></MudChip>
         </MudChipSet>
+        <MudDivider Vertical="true" Style="height:60%;"></MudDivider>
+        <TagBrowser></TagBrowser>
     </MudStack>
     <MudDivider />
 </MudStack>
@@ -27,7 +29,13 @@
     {
         if (!MouseUtils.IsLeftMouse(args) || string.IsNullOrEmpty(PathStateContainer.Path)) return;
 
-        string parentPath = Directory.GetParent(PathStateContainer.Path)?.FullName ?? string.Empty;
+        string parentPath = string.Empty;
+
+        try
+        {
+            parentPath = Directory.GetParent(PathStateContainer.Path)?.FullName ?? string.Empty;
+        }
+        catch (Exception) { }
 
         if(!string.IsNullOrEmpty(parentPath))
         {

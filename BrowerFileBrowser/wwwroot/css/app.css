@@ -144,12 +144,14 @@ input[type="text"] {
 
 .file-card, .directory-card {
     height: 100%;
-    transition: transform 0.3s ease;
 }
 
-    .file-card:hover, .directory-card:hover {
-        transform: scale(1.1);
-        background-color: var(--mud-palette-text-disabled);
+    .file-card.unselected-card:hover, .directory-card.unselected-card:hover {
+        background-color: var(--mud-palette-text-disabled) !important;
+    }
+
+    .file-card.selected-card:hover, .directory-card.selected-card:hover {
+        background-color: var(--mud-palette-text-secondary) !important;
     }
 
 .selected-card {

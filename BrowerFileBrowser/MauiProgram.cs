@@ -5,6 +5,7 @@ using MudBlazor.Services;
 using BrowerFileBrowser.Containers;
 using BrowerFileBrowser.Interfaces;
 using BrowerFileBrowser.Factory;
+using BrowerFileBrowser.DAO;
 
 namespace BrowerFileBrowser;
 
@@ -12,6 +13,8 @@ public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
+		DatabaseInitialization.InitializeDatabase();
+
         var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
