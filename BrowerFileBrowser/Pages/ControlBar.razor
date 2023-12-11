@@ -10,10 +10,6 @@
 
 <MudStack Row="false" Spacing="0" Style="width: 100%; height: fit-content;">
     <MudStack Row="true" Style="width: 100%; height: fit-content;" AlignItems="AlignItems.Center" Spacing="2">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft" OnClick="@LeftArrowClicked" Disabled="@PathStateContainer.AtBack"></MudIconButton>
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowRight" OnClick="@RightArrowClicked" Disabled="@PathStateContainer.AtFront"></MudIconButton>
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="@UpArrowClicked"></MudIconButton>
-        <MudDivider Vertical="true" Style="height:60%;"></MudDivider>
         <MudChipSet SelectedChipChanged="@SelectedFileViewerTypeChanged" Mandatory="true" MultiSelection="false" Filter="true">
             <MudChip Text="List" Color="Color.Default" SelectedColor="Color.Success" Default="true" Value="FileViewerType.List"></MudChip>
             <MudChip Text="Grid" Color="Color.Default" SelectedColor="Color.Success" Value="FileViewerType.Grid"></MudChip>

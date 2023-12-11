@@ -18,7 +18,7 @@ public class ThumbnailService : IThumbnailService
         var composition = new MediaComposition();
         composition.Clips.Add(clip);
 
-        TimeSpan timeFromStart = TimeSpan.FromSeconds(1); // or any other specific time
+        TimeSpan timeFromStart = TimeSpan.FromSeconds(0);
         VideoFramePrecision framePrecision = VideoFramePrecision.NearestFrame;
 
         var videoProperties = await file.Properties.GetVideoPropertiesAsync();

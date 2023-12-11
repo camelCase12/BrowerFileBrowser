@@ -1,13 +1,18 @@
 ﻿@*Chase Brower, 2023*@
 
 @using BrowerFileBrowser.Containers;
+@using BrowerFileBrowser.Utils
+@using MudBlazor;
 
 @inject PathStateContainer PathStateContainer
 
-<div id="path-bar" style="width: 100%; height: 3rem;">
-    <div id="path-text-container" style="width: 100%; height: 100%; padding: 0.5rem;" class="frosted-glass">
-        <input value="@path" @oninput="@ChangePathHandler" type="text" style="width: 100%; height: 100%; padding: 0.25rem;" class="frosted-glass-opaque" @onkeypress="@KeyPressHandler"/>
-    </div>
+<div id="path-bar" style="width: 100%; height: fit-content;">
+    <MudStack Row="true" id="path-text-container" Style="width: 100%; height: 100%;" class="frosted-glass">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft" Class="large-button-icon" OnClick="@LeftArrowClicked" Disabled="@PathStateContainer.AtBack"></MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowRight" Class="large-button-icon" OnClick="@RightArrowClicked" Disabled="@PathStateContainer.AtFront"></MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="@UpArrowClicked"></MudIconButton>
+        <input value="@path" @oninput="@ChangePathHandler" type="text" style="flex-grow: 1; width: auto; height: auto; margin: 0.5rem; padding: 0.25rem;" class="frosted-glass-opaque" @onkeypress="@KeyPressHandler"/>
+    </MudStack>
 </div>
 
 @code {
@@ -16,6 +21,37 @@
 
     [Parameter]
     public string Path { get; set; } = string.Empty;
+
+    private void UpArrowClicked(MouseEventArgs args)
+    {
+        if (!MouseUtils.IsLeftMouse(args) || string.IsNullOrEmpty(PathStateContainer.Path)) return;
+
+        string parentPath = string.Empty;
+
+        try
+        {
+            parentPath = Directory.GetParent(PathStateContainer.Path)?.FullName ?? string.Empty;
+        }
+        catch (Exception) { }
+
+        if (!string.IsNullOrEmpty(parentPath))
+        {
+            PathStateContainer.SetPath(parentPath);
+        }
+    }
+
+    private void LeftArrowClicked(MouseEventArgs args)
+    {
+        if (!MouseUtils.IsLeftMouse(args)) return;
+
+        PathStateContainer.NavigateBackward();
+    }
+    private void RightArrowClicked(MouseEventArgs args)
+    {
+        if (!MouseUtils.IsLeftMouse(args)) return;
+
+        PathStateContainer.NavigateForward();
+    }
 
     protected override void OnParametersSet()
     {
