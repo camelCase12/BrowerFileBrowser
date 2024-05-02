@@ -8,7 +8,7 @@
 @inject IDefaultNodeProvider DefaultNodeProvider;
 @inject PathStateContainer PathStateContainer;
 
-<div id="navigation-bar" style="min-width: 12rem; width: 20%; padding: 0.5rem; overflow-x: hidden; overflow-y: scroll;">
+<div id="navigation-bar" style="min-width: 12rem; width: 20%; padding: 0.5rem; overflow-x: hidden; overflow-y: auto;">
     <MudTreeView Items="@DefaultNodes" Hover="true" Width="100%" SelectedValueChanged="SelectedFolderChanged" T="FileSystemNode"
                  ServerData="@LoadNextNode">
         <ItemTemplate Context="item">

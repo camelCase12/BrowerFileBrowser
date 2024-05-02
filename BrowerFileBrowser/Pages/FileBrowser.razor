@@ -11,6 +11,8 @@
 @inject PathStateContainer PathStateContainer
 
 <MudThemeProvider IsDarkMode="true" />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 <MudStack name="page-container" Spacing="0" Style="width: 100%; height: 100%;" Class="gradient-background">
     <PathBar Path="@PathStateContainer.Path" />

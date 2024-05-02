@@ -1,0 +1,42 @@
+﻿@*Chase Brower, 2023*@
+
+@using BrowerFileBrowser.Enums
+@using MudBlazor;
+
+<MudDialog>
+    <DialogContent>
+        @UserReadableAction
+        <MudProgressLinear Value=progressValue ></MudProgressLinear>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    private float progressValue = 0.0f;
+
+    [Parameter]
+    [EditorRequired]
+    public Progress<int> Progress { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public BackupActionType BackupActionType { get; set; }
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+
+    public string UserReadableAction => BackupActionType switch
+    {
+        BackupActionType.BackingUp => "Backing Up",
+        BackupActionType.RestoringFromBackup => "Restoring From Backup",
+        _ => "Unknown Action"
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Progress.ProgressChanged += (sender, newProgress) => 
+        { 
+            progressValue = newProgress;
+            InvokeAsync(StateHasChanged);
+        };
+    }
+}

@@ -18,7 +18,7 @@ public class WindowsDefaultNodeProvider : IDefaultNodeProvider
         NodeUtils.AddSpecialNode(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "User", defaultNodes);
 
         // Add drives
-        FileSystemNode thisPCNode = new FileSystemNode() { Children = GetDrives(), AltName = "This PC", Pinnable = false };
+        FileSystemNode thisPCNode = new() { Children = GetDrives(), AltName = "This PC", Pinnable = false };
         defaultNodes.Add(thisPCNode);
 
         return defaultNodes;

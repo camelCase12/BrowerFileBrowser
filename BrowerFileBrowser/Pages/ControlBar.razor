@@ -57,9 +57,16 @@
         SettingsStateContainer.SetFileViewerType(newSelection?.Value as FileViewerType?);
     }
 
+    private void HandlePathStateContainerChange()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     protected override void OnInitialized()
     {
-        PathStateContainer.OnChange += () => InvokeAsync(StateHasChanged);
+        PathStateContainer.OnChange -= HandlePathStateContainerChange;
+        PathStateContainer.OnChange += HandlePathStateContainerChange;
+
         base.OnInitialized();
     }
 }

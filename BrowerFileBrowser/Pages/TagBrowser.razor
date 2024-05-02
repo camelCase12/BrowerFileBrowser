@@ -2,12 +2,15 @@
 
 @using BrowerFileBrowser.Containers
 @using BrowerFileBrowser.DAO
+@using BrowerFileBrowser.Enums
 @using BrowerFileBrowser.Interfaces
 @using BrowerFileBrowser.Utils
 @using MudBlazor;
 @using System.Diagnostics;
 
 @inject IJSRuntime JSRuntime
+
+@inject IDialogService DialogService
 
 @inject IThumbnailService ThumbnailService
 @inject PathStateContainer PathStateContainer
@@ -19,11 +22,29 @@
         @{
             List<string> tags = FileTagDAO.GetTags();
         }
-        <MudGrid Style="width:100%; height:auto; max-height:100%; overflow-y:scroll;" Spacing="0">
+        <MudGrid Style="width:100%; height:auto; max-height:100%; overflow-y:auto;" Spacing="0">
             <div style="position:absolute; top:1rem; right:1rem;">
-                <MudTooltip Text="Open Tag Db Location">
-                    <MudIconButton Icon="@Icons.Material.Filled.Folder" OnClick="OpenDbFolder" />
-                </MudTooltip>
+                <MudStack Row="false">
+                    <MudTooltip Text="Open Tag Db Location">
+                        <MudIconButton Icon="@Icons.Material.Filled.Folder" OnClick="OpenDbFolder" />
+                    </MudTooltip>
+                    <MudTooltip Text="Run Backup">
+                        <MudIconButton Icon="@Icons.Material.Filled.Backup" Disabled="@BackupRunning" OnClick="RunBackup" />
+                    </MudTooltip>
+                    <MudTooltip Text="Open Backup Location">
+                        <MudIconButton Icon="@Icons.Material.Filled.Folder" OnClick="OpenBackupFolder" />
+                    </MudTooltip>
+                    <MudTooltip Text="Restore from Backup">
+                        <MudFileUpload T="IBrowserFile" FilesChanged="RestoreFromBackup">
+                            <ButtonTemplate>
+                                <MudIconButton HtmlTag="label"
+                                               Icon="@Icons.Material.Filled.DriveFolderUpload"
+                                               Disabled="@BackupRunning"
+                                               for="@context.Id" />
+                            </ButtonTemplate>
+                        </MudFileUpload>
+                    </MudTooltip>
+                </MudStack>
             </div>
             @foreach(string tag in tags) 
             {
@@ -59,6 +80,7 @@
 
 @code {
     private bool PopoverOpen { get; set; } = false;
+    private bool BackupRunning { get; set; } = false;
 
     private Dictionary<string, string> thumbnailCache = new();
     private Dictionary<string, string> filenameCache = new();
@@ -71,6 +93,73 @@
         {
             Process.Start("explorer.exe", DAO.DBDirectory);
         }
+    }
+
+    public async Task RunBackup(MouseEventArgs e)
+    {
+        BackupRunning = true;
+        StateHasChanged();
+
+        Progress<int> progress = new();
+
+        //Create backup dialog
+        var options = new DialogOptions { DisableBackdropClick = true };
+        var parameters = new DialogParameters<BackupDialog>();
+        parameters.Add(x => x.BackupActionType, BackupActionType.BackingUp);
+        parameters.Add(x => x.Progress, progress);
+
+        var dialog = DialogService.Show<BackupDialog>("Backup", parameters, options);
+
+        //Start backup
+        await FileTagDAO.CreateBackupFromTags(progress);
+
+        await Task.Delay(250);
+
+        dialog.Close();
+
+        BackupRunning = false;
+    }
+
+    public void OpenBackupFolder(MouseEventArgs e)
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Process.Start("explorer.exe", DAO.BackupDirectory);
+        }
+    }
+
+    public async Task RestoreFromBackup(IBrowserFile file)
+    {
+        BackupRunning = true;
+        StateHasChanged();
+
+        Progress<int> progress = new();
+
+        //Create backup dialog
+        var options = new DialogOptions { DisableBackdropClick = true };
+        var parameters = new DialogParameters<BackupDialog>();
+        parameters.Add(x => x.BackupActionType, BackupActionType.RestoringFromBackup);
+        parameters.Add(x => x.Progress, progress);
+
+        var dialog = DialogService.Show<BackupDialog>("Backup", parameters, options);
+
+        var tcs = new TaskCompletionSource<bool>();
+
+        //Start backup
+        Thread thread = new(async (tcs) => 
+        { 
+            await FileTagDAO.RestoreBackupAsync(file.OpenReadStream(int.MaxValue), progress);
+            ((TaskCompletionSource<bool>)tcs).SetResult(true);
+        } );
+
+        thread.Start(tcs);
+
+        await tcs.Task;
+
+        dialog.Close();
+
+        BackupRunning = false;
+        StateHasChanged();
     }
 
     private async Task GenerateThumbnail(string tag)

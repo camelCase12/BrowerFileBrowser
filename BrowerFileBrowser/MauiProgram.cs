@@ -6,6 +6,8 @@ using BrowerFileBrowser.Containers;
 using BrowerFileBrowser.Interfaces;
 using BrowerFileBrowser.Factory;
 using BrowerFileBrowser.DAO;
+using BrowerFileBrowser.Models;
+using System.Net.Http;
 
 namespace BrowerFileBrowser;
 
@@ -27,7 +29,11 @@ public static class MauiProgram
         builder.Services.AddSingleton(DefaultNodeProviderFactory.Create());
         builder.Services.AddSingleton<IThumbnailService, ThumbnailService>();
 
+        builder.Services.AddSingleton(new HttpClient(new CustomHttpHandler()) { });
+
         builder.Services.AddMauiBlazorWebView();
+
+		builder.Services.AddMudServices();
 		
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
