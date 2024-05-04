@@ -152,6 +152,32 @@ public static class FileTagDAO
         return files;
     }
 
+    public static List<string> GetFilesPaginated(int page, int pageSize)
+    {
+        List<string> files = new List<string>();
+        using var connection = new SqliteConnection(DAO.ConnectionString);
+
+        connection.Open();
+
+        string query = @"
+        SELECT FilePath FROM Files
+        LIMIT @PageSize OFFSET @Offset";
+
+        using var command = new SqliteCommand(query, connection);
+
+        int offset = (page) * pageSize;
+
+        command.Parameters.AddWithValue("@PageSize", pageSize);
+        command.Parameters.AddWithValue("@Offset", offset);
+        using SqliteDataReader reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            files.Add(reader["FilePath"].ToString());
+        }
+        return files;
+    }
+
     public static string GetFirstFileForTag(string tagName)
     {
         using var connection = new SqliteConnection(DAO.ConnectionString);
@@ -231,14 +257,16 @@ public static class FileTagDAO
         // Backup the database file first
         await BackupFileToZip(databaseFile, backupLocation);
 
-        // Get all tags and calculate the total files for progress reporting
-        var tags = GetTags();
         int totalFiles = GetFileCount();
         int processedFiles = 0;
 
-        foreach (var tag in tags)
+        int PAGE_SIZE = 100;
+
+        int totalPages = totalFiles / PAGE_SIZE + 1;
+
+        for (int i = 0; i < totalPages; i++)
         {
-            var files = GetFilesForTag(tag);
+            var files = GetFilesPaginated(i, PAGE_SIZE);
 
             foreach (var file in files)
             {
